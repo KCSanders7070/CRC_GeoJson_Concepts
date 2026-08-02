@@ -2,46 +2,28 @@
 
 GeoJSON is a JSON-based format used to represent geographic locations, shapes, and related information.
 
-A GeoJSON object commonly contains:
+A GeoJSON file commonly contains a feature collection with one or more features:
 
-* A **geometry**, such as a point or line.
-* **Properties** that describe the geographic object.
-* A **Feature** wrapper that combines geometry and properties.
-* A **FeatureCollection** that contains multiple features.
+- **FEATURECOLLECTION** `contains multiple features`
+  - **FEATURE** `combines geometry and properties`
+    - **GEOMETRY** `point, line, or polygon`
+    - **PROPERTIES** `describes the geographic object`
 
 ---
 
 ## Coordinate Order
 
-GeoJSON coordinates normally use this order:
+GeoJSON coordinates normally use `[longitude, latitude]`  
+For example: `[-81.6944, 41.4993]`
 
-```text
-[longitude, latitude]
-```
-
-For example:
-
-```json
-[-81.6944, 41.4993]
-```
-
-In this coordinate:
-
-* `-81.6944` is the longitude.
-* `41.4993` is the latitude.
-
-An optional third number may represent altitude:
-
-```json
-[-81.6944, 41.4993, 850]
-```
+An optional third number may represent altitude: `[-81.6944, 41.4993, 850]`
+- Note: Alittude aspect not recognized in CRC, yet.
 
 ---
 
 # 1. Point
 
-A `Point` represents one geographic position.
-
+A `Point` represents a single geographic position.
 Its `coordinates` property contains a single coordinate pair.
 
 ## Point Geometry
@@ -53,8 +35,6 @@ Its `coordinates` property contains a single coordinate pair.
 }
 ```
 
-This example represents one location at longitude `-81.6944` and latitude `41.4993`.
-
 A geometry object by itself does not contain descriptive properties. To attach information to the point, place it inside a `Feature`.
 
 ## Point Feature
@@ -62,13 +42,13 @@ A geometry object by itself does not contain descriptive properties. To attach i
 ```json
 {
   "type": "Feature",
-  "properties": {
-    "name": "Cleveland",
-    "state": "Ohio"
-  },
   "geometry": {
     "type": "Point",
     "coordinates": [-81.6944, 41.4993]
+  },
+  "properties": {
+    "name": "Cleveland",
+    "state": "Ohio"
   }
 }
 ```
@@ -94,22 +74,11 @@ Its `coordinates` property contains an array of coordinate pairs.
 }
 ```
 
-The coordinates are connected in the order they appear:
-
-1. The line begins at `[-81.7000, 41.5000]`.
-2. It continues to `[-81.6500, 41.5200]`.
-3. It ends at `[-81.6000, 41.5500]`.
-
 ## LineString Feature
 
 ```json
 {
   "type": "Feature",
-  "properties": {
-    "name": "Example Route",
-    "routeType": "Training",
-    "active": true
-  },
   "geometry": {
     "type": "LineString",
     "coordinates": [
@@ -117,6 +86,11 @@ The coordinates are connected in the order they appear:
       [-81.6500, 41.5200],
       [-81.6000, 41.5500]
     ]
+  },
+  "properties": {
+    "name": "Example Route",
+    "routeType": "Training",
+    "active": true
   }
 }
 ```
@@ -132,6 +106,7 @@ Its `coordinates` property contains:
 1. An array of lines.
 2. Each line contains an array of coordinate pairs.
 3. Each coordinate pair contains longitude and latitude.
+
 
 ## MultiLineString Geometry
 
@@ -182,10 +157,6 @@ The end of the first line is not automatically connected to the beginning of the
 ```json
 {
   "type": "Feature",
-  "properties": {
-    "name": "Example Route Network",
-    "lineCount": 2
-  },
   "geometry": {
     "type": "MultiLineString",
     "coordinates": [
@@ -200,9 +171,14 @@ The end of the first line is not automatically connected to the beginning of the
         [-81.7000, 41.4500]
       ]
     ]
+  },
+  "properties": {
+    "name": "Example Route Network",
+    "lineCount": 2
   }
 }
 ```
+- Note: In CRC, a MultiLineString feature is a great way to store things such as an airway that has one or more "breaks" or to construct a SID/STAR with different paths that aren't all one single continuous line.
 
 ---
 
@@ -213,19 +189,19 @@ A `Feature` represents one geographic item.
 A Feature normally contains:
 
 * `type`
-* `properties`
 * `geometry`
+* `properties`
 
 ## General Feature Structure
 
 ```json
 {
   "type": "Feature",
-  "properties": {},
   "geometry": {
     "type": "Point",
     "coordinates": [-81.6944, 41.4993]
-  }
+  },
+  "properties": {}
 }
 ```
 
@@ -242,23 +218,17 @@ The geometry has its own `type`, such as:
 ```json
 {
   "type": "Feature",
+  "geometry": {
+    "type": "Point",
+    "coordinates": [-81.6944, 41.4993]
+  },
   "properties": {
     "identifier": "FIX001",
     "name": "Example Fix",
     "category": "Waypoint"
-  },
-  "geometry": {
-    "type": "Point",
-    "coordinates": [-81.6944, 41.4993]
   }
 }
 ```
-
-This object describes one geographic feature:
-
-* The feature is named `Example Fix`.
-* Its category is `Waypoint`.
-* Its geometry is a single point.
 
 ---
 
@@ -276,22 +246,22 @@ A `FeatureCollection` contains a `features` array. Each item in that array is a 
   "features": [
     {
       "type": "Feature",
-      "properties": {},
       "geometry": {
         "type": "Point",
         "coordinates": [-81.6944, 41.4993]
-      }
+      },
+      "properties": {}
     },
     {
       "type": "Feature",
-      "properties": {},
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [-81.7000, 41.5000],
           [-81.6500, 41.5200]
         ]
-      }
+      },
+      "properties": {}
     }
   ]
 }
@@ -305,23 +275,18 @@ A `FeatureCollection` contains a `features` array. Each item in that array is a 
   "features": [
     {
       "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-81.7000, 41.5000]
+      },
       "properties": {
         "identifier": "FIX001",
         "name": "Starting Point",
         "category": "Waypoint"
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [-81.7000, 41.5000]
       }
     },
     {
       "type": "Feature",
-      "properties": {
-        "identifier": "ROUTE001",
-        "name": "Primary Route",
-        "category": "Route"
-      },
       "geometry": {
         "type": "LineString",
         "coordinates": [
@@ -329,15 +294,15 @@ A `FeatureCollection` contains a `features` array. Each item in that array is a 
           [-81.6500, 41.5200],
           [-81.6000, 41.5500]
         ]
+      },
+      "properties": {
+        "identifier": "ROUTE001",
+        "name": "Primary Route",
+        "category": "Route"
       }
     },
     {
       "type": "Feature",
-      "properties": {
-        "identifier": "NETWORK001",
-        "name": "Alternate Routes",
-        "category": "Route Network"
-      },
       "geometry": {
         "type": "MultiLineString",
         "coordinates": [
@@ -350,6 +315,11 @@ A `FeatureCollection` contains a `features` array. Each item in that array is a 
             [-81.5500, 41.5800]
           ]
         ]
+      },
+      "properties": {
+        "identifier": "NETWORK001",
+        "name": "Alternate Routes",
+        "category": "Route Network"
       }
     }
   ]
@@ -377,6 +347,14 @@ Properties do not define where the feature is located. The `geometry` object han
 ```json
 {
   "type": "Feature",
+  "geometry": {
+    "type": "LineString",
+    "coordinates": [
+      [-81.7000, 41.5000],
+      [-81.6500, 41.5200],
+      [-81.6000, 41.5500]
+    ]
+  },
   "properties": {
     "identifier": "ROUTE001",
     "name": "Northern Route",
@@ -386,14 +364,6 @@ Properties do not define where the feature is located. The `geometry` object han
     "maximumAltitude": 10000,
     "routeClass": "Primary",
     "remarks": null
-  },
-  "geometry": {
-    "type": "LineString",
-    "coordinates": [
-      [-81.7000, 41.5000],
-      [-81.6500, 41.5200],
-      [-81.6000, 41.5500]
-    ]
   }
 }
 ```
@@ -424,11 +394,11 @@ A feature may have an empty properties object:
 ```json
 {
   "type": "Feature",
-  "properties": {},
   "geometry": {
     "type": "Point",
     "coordinates": [-81.6944, 41.4993]
-  }
+  },
+  "properties": {}
 }
 ```
 
@@ -437,11 +407,11 @@ The `properties` value may also be `null`:
 ```json
 {
   "type": "Feature",
-  "properties": null,
   "geometry": {
     "type": "Point",
     "coordinates": [-81.6944, 41.4993]
-  }
+  },
+  "properties": null
 }
 ```
 
@@ -459,12 +429,12 @@ The `id` is separate from the `properties` object.
 {
   "type": "Feature",
   "id": "FIX001",
-  "properties": {
-    "name": "Example Fix"
-  },
   "geometry": {
     "type": "Point",
     "coordinates": [-81.6944, 41.4993]
+  },
+  "properties": {
+    "name": "Example Fix"
   }
 }
 ```
@@ -474,13 +444,13 @@ An identifier may instead be stored in `properties`:
 ```json
 {
   "type": "Feature",
-  "properties": {
-    "identifier": "FIX001",
-    "name": "Example Fix"
-  },
   "geometry": {
     "type": "Point",
     "coordinates": [-81.6944, 41.4993]
+  },
+  "properties": {
+    "identifier": "FIX001",
+    "name": "Example Fix"
   }
 }
 ```
@@ -500,10 +470,6 @@ Use this structure when all lines are parts of the same geographic feature and s
 ```json
 {
   "type": "Feature",
-  "properties": {
-    "name": "Route System",
-    "owner": "Example Organization"
-  },
   "geometry": {
     "type": "MultiLineString",
     "coordinates": [
@@ -516,6 +482,10 @@ Use this structure when all lines are parts of the same geographic feature and s
         [-81.7500, 41.4200]
       ]
     ]
+  },
+  "properties": {
+    "name": "Route System",
+    "owner": "Example Organization"
   }
 }
 ```
@@ -539,30 +509,30 @@ Use a FeatureCollection when each line is a separate feature with its own proper
   "features": [
     {
       "type": "Feature",
-      "properties": {
-        "name": "Route A",
-        "status": "Active"
-      },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [-81.7000, 41.5000],
           [-81.6500, 41.5200]
         ]
+      },
+      "properties": {
+        "name": "Route A",
+        "status": "Active"
       }
     },
     {
       "type": "Feature",
-      "properties": {
-        "name": "Route B",
-        "status": "Inactive"
-      },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [-81.8000, 41.4000],
           [-81.7500, 41.4200]
         ]
+      },
+      "properties": {
+        "name": "Route B",
+        "status": "Inactive"
       }
     }
   ]
@@ -669,24 +639,19 @@ The following example combines Points, LineStrings, MultiLineStrings, and featur
     {
       "type": "Feature",
       "id": "POINT001",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-81.7000, 41.5000]
+      },
       "properties": {
         "name": "Departure Point",
         "featureType": "Waypoint",
         "active": true
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [-81.7000, 41.5000]
       }
     },
     {
       "type": "Feature",
       "id": "LINE001",
-      "properties": {
-        "name": "Primary Path",
-        "featureType": "Route",
-        "minimumAltitude": 5000
-      },
       "geometry": {
         "type": "LineString",
         "coordinates": [
@@ -694,16 +659,16 @@ The following example combines Points, LineStrings, MultiLineStrings, and featur
           [-81.6500, 41.5200],
           [-81.6000, 41.5500]
         ]
+      },
+      "properties": {
+        "name": "Primary Path",
+        "featureType": "Route",
+        "minimumAltitude": 5000
       }
     },
     {
       "type": "Feature",
       "id": "MULTILINE001",
-      "properties": {
-        "name": "Alternate Path System",
-        "featureType": "Route Network",
-        "lineCount": 2
-      },
       "geometry": {
         "type": "MultiLineString",
         "coordinates": [
@@ -718,6 +683,11 @@ The following example combines Points, LineStrings, MultiLineStrings, and featur
             [-81.5000, 41.6000]
           ]
         ]
+      },
+      "properties": {
+        "name": "Alternate Path System",
+        "featureType": "Route Network",
+        "lineCount": 2
       }
     }
   ]
