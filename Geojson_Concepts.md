@@ -8,6 +8,9 @@ A GeoJSON file commonly contains a feature collection with one or more features:
   - **FEATURE** `combines geometry and properties`
     - **GEOMETRY** `point, line, or polygon`
     - **PROPERTIES** `describes the geographic object`
+- A Feature must contain a `type`, `geometry`, and a `properties`.
+  - `geometry` may be null, while `properties` must be either a JSON object or null.
+  - Order does not matter but is commonly formated as `type`, `geometry`, `properties`.
 
 ---
 
@@ -16,14 +19,14 @@ A GeoJSON file commonly contains a feature collection with one or more features:
 GeoJSON coordinates normally use `[longitude, latitude]`  
 For example: `[-81.6944, 41.4993]`
 
-An optional third number may represent altitude: `[-81.6944, 41.4993, 850]`
+An optional third number may represent altitude meters above or below the WGS 84 reference ellipsoid: `[-81.6944, 41.4993, 850]`
 - Note: Alittude aspect not recognized in CRC, yet.
 
 ---
 
 # 1. Point
 
-A `Point` represents a single geographic position.
+A `Point` represents a single geographic position.  
 Its `coordinates` property contains a single coordinate pair.
 
 ## Point Geometry
@@ -212,6 +215,7 @@ The geometry has its own `type`, such as:
 * `"Point"`
 * `"LineString"`
 * `"MultiLineString"`
+* `"Polygon"`
 
 ## Single-Feature Example
 
@@ -385,7 +389,7 @@ Properties can contain normal JSON value types:
 }
 ```
 
-Property names and values are defined by the application using the GeoJSON data. GeoJSON does not require specific property names.
+Property names and values are defined by the application using the GeoJSON data, such as CRC. GeoJSON does not require specific property names.
 
 ## Empty Properties
 
@@ -415,15 +419,15 @@ The `properties` value may also be `null`:
 }
 ```
 
-Using an empty object is often more convenient when properties may be added later.
+Note: Using an empty object, rather than null, is often more convenient when properties may be added later.
 
 ---
 
 # 7. Feature ID
 
-A Feature may contain an optional top-level `id`.
+If your feature has an identifier of some sort and you do not wish to list the ID as a property, a Feature may contain an optional top-level `id` and may be either a JSON string or number.
 
-The `id` is separate from the `properties` object.
+The specific `id` key is separate from the `properties` object.
 
 ```json
 {
@@ -439,23 +443,7 @@ The `id` is separate from the `properties` object.
 }
 ```
 
-An identifier may instead be stored in `properties`:
-
-```json
-{
-  "type": "Feature",
-  "geometry": {
-    "type": "Point",
-    "coordinates": [-81.6944, 41.4993]
-  },
-  "properties": {
-    "identifier": "FIX001",
-    "name": "Example Fix"
-  }
-}
-```
-
-The application consuming the GeoJSON determines which approach is more appropriate.
+The application consuming the GeoJSON determines which approach is more appropriate.  Note: CRC does not make use of the `id` key.
 
 ---
 
@@ -698,14 +686,15 @@ The following example combines Points, LineStrings, MultiLineStrings, and featur
 
 # Summary
 
-| Concept             | GeoJSON Type        | Purpose                                   |
-| ------------------- | ------------------- | ----------------------------------------- |
-| Point               | `Point`             | Represents one geographic position        |
-| Line                | `LineString`        | Represents one connected path             |
-| Multiple lines      | `MultiLineString`   | Represents multiple lines as one geometry |
-| Single feature      | `Feature`           | Combines one geometry with properties     |
-| Multiple features   | `FeatureCollection` | Stores multiple independent Features      |
-| Feature information | `properties`        | Stores descriptive, non-geographic data   |
+| Concept             | GeoJSON Type        | Purpose                                                                                  |
+| ------------------- | ------------------- | ---------------------------------------------------------------------------------------- |
+| Point               | `Point`             | Represents one geographic position                                                       |
+| Line                | `LineString`        | Represents one connected path                                                            |
+| Multiple lines      | `MultiLineString`   | Represents multiple lines as one geometry                                                |
+| Polygon             | `Polygon`           | Represents an enclosed area using one exterior boundary and optional interior boundaries |
+| Single feature      | `Feature`           | Combines one geometry with properties                                                    |
+| Multiple features   | `FeatureCollection` | Stores multiple independent Features                                                     |
+| Feature information | `properties`        | Stores descriptive, non-geographic data                                                  |
 
 The main structural difference is:
 
@@ -718,6 +707,9 @@ One connected sequence of positions
 
 MultiLineString:
 Multiple sequences of positions within one geometry
+
+Polygon:
+One exterior boundary with optional interior boundaries
 
 Feature:
 One geometry plus one properties object
